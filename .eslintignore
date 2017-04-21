@@ -1,0 +1,6 @@
+xml2json.js
+configurators/tracker/*.js
+configurators/http-server/*.js
+configurators/database/models.js
+configurators/database/config.js
+configurators/database/definitions

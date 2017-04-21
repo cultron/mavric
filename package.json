@@ -1,16 +1,14 @@
 {
   "name": "mavric",
-  "version": "0.0.1",
+  "description": "Mavric is simple MVC framework on top of Express, Goa and Sahara to speed up the build out of web server controllers, views, and models.",
+  "version": "0.0.2",
   "engines": {
     "node": ">=4.3.0"
   },
   "license": "MIT",
-  "scripts": {  },
+  "scripts": {},
   "dependencies": {
     "async": "1.5.2",
-    "aws-sdk": "2.4.2",
-    "babel": "^6.5.2",
-    "babel-polyfill": "^6.16.0",
     "body-parser": "^1.15.2",
     "chalk": "^1.1.3",
     "connect-multiparty": "^2.0.0",
@@ -23,7 +21,9 @@
     "joi": "^9.0.4",
     "looger": "^1.1.2",
     "mixpanel": "^0.4.0",
+    "mysql": "^2.13.0",
     "pg": "6.0.1",
+    "pg-query-stream": "1.0.0",
     "sahara": "3.1.1",
     "semver": "5.3.0",
     "sequelize": "^3.24.1",
@@ -31,16 +31,8 @@
     "sql": "0.70.0"
   },
   "devDependencies": {
-    "babel-preset-react": "^6.16.0",
-    "babelify": "^7.3.0",
-    "browserify": "^13.1.1",
-    "gulp": "^3.9.1",
-    "gulp-exec": "^2.1.2",
-    "gulp-nodemon": "^2.1.0",
-    "gulp-sourcemaps": "^2.2.0",
-    "gulp-util": "^3.0.7",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.7.0"
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.1.3",
+    "eslint-plugin-import": "^2.2.0"
   }
 }

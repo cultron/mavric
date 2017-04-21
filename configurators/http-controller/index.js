@@ -1,8 +1,8 @@
-var fs = require('fs'),
-    path = require('path'),
-    async = require('async');
+const fs = require('fs');
+const path = require('path');
+const async = require('async');
 
-module.exports = function(container, callback) {
+const Configurator =  (container, callback) => {
     container.registerInstance(require('goa'), 'goa');
 
     var configurators = [
@@ -13,29 +13,11 @@ module.exports = function(container, callback) {
 
     async.eachSeries(configurators, function(configurator, next) {
         configurator(container, next);
-    }, function() {
-        var dir = path.join(__dirname);
-        fs.readdir(dir, function(err, files) {
-            if (err) {
-                callback(err);
-                return;
-            }
+    }, callback);
+};
 
-            try {
-                files
-                    .filter(function(filename) {
-                        return /\.js$/.test(filename) &&
-                            filename !== 'index.js' &&
-                            filename !== 'goa.js';
-                    })
-                    .forEach(function(filename) {
-                        container.registerType(require(path.join(dir, filename)));
-                    });
-
-                callback();
-            } catch (err) {
-                callback(err);
-            }
-        });
-    });
+module.exports = {
+    Configurator: Configurator,
+    BaseController: require('./base-controller'),
+    ServiceController: require('./service-controller')
 };

@@ -4,9 +4,9 @@ This framework is inspired by a true Maverick, Tommy Montgomery (@tmont).
 
 TODO
 
--  fix up the database configurator
 -  describe project and intention in detail
 -  add tests
+-  CI builds
 -  show code examples for usage
 
 

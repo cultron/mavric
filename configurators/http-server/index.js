@@ -84,10 +84,6 @@ module.exports = (init) => {
 
         log.info('Express listening on port ' + chalk.magenta(port));
 
-        if (config.debugExpressRequests) {
-            require('./express-debugger')(container);
-        }
-
         const elapsed = Date.now() - start;
         tracker.track('app start', { elapsed: elapsed });
         log.debug('App configured in ' + chalk.yellow(elapsed) + 'ms');

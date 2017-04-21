@@ -1,3 +1,5 @@
 node_modules
 .idea
-database/
+database/models.js
+database/config.js
+database/definitions
