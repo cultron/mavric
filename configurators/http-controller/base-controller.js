@@ -47,6 +47,10 @@ class BaseController {
         this.send(this.goa.json(json, status || 200));
     }
 
+    redirect(path) {
+        this.send(this.goa.redirect(path));
+    }
+
     render(view, context) {
         if (!view) {
             view = this.defaultViewName;

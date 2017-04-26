@@ -104,10 +104,11 @@ class EntityDefinition {
         options.getterMethods = this.getters;
         options.setterMethods = this.setters;
 
-        options.instanceMethods.toJSON = () => {
-            var json = this.constructor.super_.prototype.toJSON.apply(this, arguments);
-            return cleanJson(json, self.toRemoveFromJSON);
-        };
+        //options.instanceMethods.toJSON = () => {
+        //    console.log(Entity);
+        //    var json = this.constructor.super_.prototype.toJSON.apply(this, arguments);
+        //    return cleanJson(json, self.toRemoveFromJSON);
+        //};
 
         options.instanceMethods.duplicate = (data, build) => {
             if (typeof(data) === 'boolean' && typeof(build) === 'undefined') {

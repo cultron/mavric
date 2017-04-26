@@ -6,7 +6,7 @@ module.exports = (init) => {
 
     // jscs:disable disallowIdentifierNames
     process.on('uncaughtException', (err) => {
-        const safeLog = log || console;
+        const safeLog = console || log;
         safeLog.error('Uncaught exception');
         safeLog.error(err);
         if (err.stack) {
