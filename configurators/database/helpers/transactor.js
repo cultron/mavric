@@ -1,15 +1,17 @@
-function Transactor(/** Sequelize */sequelize,
+'use strict';
+
+class Transactor{
+    constructor(/** Sequelize */sequelize,
                     /** Log */log,
                     /** DefaultIsolationLevel */isolationLevel,
                     /** TransactionProvider */txProvider) {
-    this.sequelize = sequelize;
-    this.log = log;
-    this.txProvider = txProvider;
-    this.isolationLevel = isolationLevel;
-}
+        this.sequelize = sequelize;
+        this.log = log;
+        this.txProvider = txProvider;
+        this.isolationLevel = isolationLevel;
+    }
 
-Transactor.prototype = {
-    transact: function (thunk, options, callback) {
+    transact(thunk, options, callback) {
         if (typeof(options) === 'function') {
             callback = options;
             options = null;

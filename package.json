@@ -13,13 +13,6 @@
     "name": "Matt cullerton",
     "email": "mcullerton@gmail.com"
   },
-  "files": [
-    "index.js",
-    "bin"
-  ],
-  "bin": {
-    "mavric": "./bin/mavric.js"
-  },
   "license": "MIT",
   "scripts": {},
   "dependencies": {
