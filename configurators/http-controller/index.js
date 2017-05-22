@@ -7,7 +7,6 @@ const Configurator =  (container, callback) => {
 
     var configurators = [
         require('./error-handling/error-mapping'),
-        require('./error-handling/express-error-handler'),
         require('./goa')
     ];
 
