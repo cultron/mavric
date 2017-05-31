@@ -47,6 +47,10 @@ class BaseController {
         this.send(this.goa.json(json, status || 200));
     }
 
+    file(filePath) {
+        this.send(this.goa.file(filePath));
+    }
+
     redirect(path) {
         this.send(this.goa.redirect(path));
     }
