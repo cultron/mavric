@@ -3,7 +3,7 @@
 const QueryStream = require('pg-query-stream');
 
 class Repository {
- constructor(modelName, queryHelper, tenant, loggedInUser) {
+ constructor(modelName, queryHelper) {
     this.model = queryHelper.sequelize.models[modelName];
     this.modelName = modelName;
     if (!this.model) {
@@ -14,8 +14,6 @@ class Repository {
     this.models = queryHelper.sequelize.models;
     this.log = queryHelper.log;
     this.queryHelper = queryHelper;
-    this.tenant = tenant;
-    this.loggedInUser = loggedInUser;
     this.sql = queryHelper.sql;
     this.schema = queryHelper.schema;
     this.queryInterface = queryHelper.sequelize.getQueryInterface();
@@ -63,11 +61,6 @@ class Repository {
 
     build(data, noVerify) {
         data = data || {};
-        if (!noVerify) {
-            // default to verifying; skip verification if second arg passed
-            !noVerify && this.verifyTenantAndUser();
-            data.tenant_id = this.tenant.id;
-        }
         return this.model.build(data);
     }
 
@@ -97,13 +90,10 @@ class Repository {
             options = {};
         }
 
-        this.verifyTenantAndUser();
-
         var include = this.getInclusions(options.include);
         var query = this.model.find(this.getQueryOptions({
             where: {
                 id: id,
-                tenant_id: this.tenant.id
             },
             include: include
         }));
@@ -117,11 +107,9 @@ class Repository {
             options = {};
         }
 
-        this.verifyTenantAndUser();
 
         var include = this.getInclusions(options.include),
             query = this.model.findAll(this.getQueryOptions({
-                where: {tenant_id: this.tenant.id},
                 include: include
             }));
 
