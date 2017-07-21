@@ -1,6 +1,6 @@
 'use strict';
 const successCode = require('./http-response');
-const HttpRequester = require('./http-requester');
+const httpRequester = require('./http-requester');
 
 class HttpInterface {
     constructor(log, baseUrl, tracker) {
