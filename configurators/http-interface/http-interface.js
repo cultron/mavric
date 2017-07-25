@@ -1,12 +1,12 @@
 'use strict';
 const successCode = require('./http-response');
-const httpRequester = require('./http-requester');
+const HttpRequester = require('./http-requester');
 
 class HttpInterface {
     constructor(log, baseUrl, tracker) {
         this.log = log;
         this.baseUrl = baseUrl;
-        this.httpRequester = httpRequester;
+        this.httpRequester = new HttpRequester();
         this.tracker = tracker;
         this.vendorName = 'HttpInterface';
     }
@@ -46,6 +46,8 @@ class HttpInterface {
                 try {
                     if (typeof(response.body) === 'string') {
                         data = JSON.parse(response.body);
+                    } else {
+                      data = response.body;
                     }
                 } catch (e) {
                     data = response.body;
