@@ -6,15 +6,17 @@ class HttpInterface {
     constructor(log, baseUrl, tracker) {
         this.log = log;
         this.baseUrl = baseUrl;
-        this.httpRequester = httpRequester;
+        this.httpRequester = HttpRequester;
         this.tracker = tracker;
         this.vendorName = 'HttpInterface';
     }
     request(options, callback) {
         let method = options.method;
         let url = this.baseUrl + '/' + options.uri,
+            headers = options.headers,
             qs = options.qs || {},
-            json = options.json;
+            json = options.json,
+            form = options.form;
 
         const handleResponse = (err, response) => {
             if (err) {
@@ -54,9 +56,11 @@ class HttpInterface {
         };
 
         if (json) {
-            this.httpRequester.sendJson(method, url, null, qs, json, handleResponse);
+            this.httpRequester.sendJson(method, url, headers, qs, json, handleReponse);
+        } else if (form) {
+            this.httpRequester.sendForm(method, url, headers, qs, form, handleReponse);
         } else {
-            this.httpRequester.send(method, url, null, qs, null, null, handleResponse);
+            this.httpRequester.send(method, url, headers, qs, null, null, handleReponse);
         }
     }
 }
