@@ -6,7 +6,7 @@ class HttpInterface {
     constructor(log, baseUrl, tracker) {
         this.log = log;
         this.baseUrl = baseUrl;
-        this.httpRequester = httpRequester;
+        this.httpRequester = new HttpRequester();
         this.tracker = tracker;
         this.vendorName = 'HttpInterface';
     }
@@ -14,7 +14,8 @@ class HttpInterface {
         let method = options.method;
         let url = this.baseUrl + '/' + options.uri,
             qs = options.qs || {},
-            json = options.json;
+            json = options.json,
+            headers = options.headers || null;
 
         const handleResponse = (err, response) => {
             if (err) {
@@ -45,6 +46,8 @@ class HttpInterface {
                 try {
                     if (typeof(response.body) === 'string') {
                         data = JSON.parse(response.body);
+                    } else {
+                      data = response.body;
                     }
                 } catch (e) {
                     data = response.body;
@@ -54,9 +57,9 @@ class HttpInterface {
         };
 
         if (json) {
-            this.httpRequester.sendJson(method, url, null, qs, json, handleResponse);
+            this.httpRequester.sendJson(method, url, headers, qs, json, handleResponse);
         } else {
-            this.httpRequester.send(method, url, null, qs, null, null, handleResponse);
+            this.httpRequester.send(method, url, headers, qs, null, null, handleResponse);
         }
     }
 }
