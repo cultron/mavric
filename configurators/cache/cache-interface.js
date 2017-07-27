@@ -22,23 +22,25 @@ class CacheInterface {
                 return;
             }
 
-            if (item) {
-                try {
-                    item = JSON.parse(item);
-                    callback(err, item);
-                } catch (e) {
-                    this.log.error(`${this.name} error:`, e);
-                    callback(e, item);
-                }
-
-                return;
+            if (!item) {
+              callback(err, null);
+              return;
             }
-        });
+
+            try {
+                item = JSON.parse(item);
+                callback(err, item);
+            } catch (e) {
+                this.log.error(`${this.name} error:`, e);
+                callback(e, item);
+            }
+      });
     }
 
     wrappedCallback(callback) {
-        return (err) => {
-            err && this.log.error(`${this.name} error:`, err);
+        const self = this;
+        return function (err) {
+            err && self.log.error(`${self.name} error:`, err);
             callback && callback.apply(null, arguments);
         };
     }
@@ -64,7 +66,7 @@ class CacheInterface {
         }
 
         this.log.debug('setting cache value at ' + chalk.cyan(key) + ' with TTL ' + chalk.yellow(ttl.toString()));
-        this.client.set(key, ttl, value, this.wrappedCallback(callback));
+        this.client.set(key, value, 'EX', ttl, this.wrappedCallback(callback));
     }
 
     setObject(key, value, ttl, callback) {
@@ -81,3 +83,5 @@ class CacheInterface {
     }
 
 }
+
+module.exports = CacheInterface;
