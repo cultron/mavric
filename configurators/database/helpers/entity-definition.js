@@ -104,13 +104,12 @@ class EntityDefinition {
         options.getterMethods = this.getters;
         options.setterMethods = this.setters;
 
-        //options.instanceMethods.toJSON = () => {
-        //    console.log(Entity);
-        //    var json = this.constructor.super_.prototype.toJSON.apply(this, arguments);
-        //    return cleanJson(json, self.toRemoveFromJSON);
-        //};
+        options.instanceMethods.toJSON = function() {
+           var json = this.constructor.super_.prototype.toJSON.apply(this, arguments);
+           return cleanJson(json, self.toRemoveFromJSON);
+        };
 
-        options.instanceMethods.duplicate = (data, build) => {
+        options.instanceMethods.duplicate = function(data, build) {
             if (typeof(data) === 'boolean' && typeof(build) === 'undefined') {
                 build = data;
                 data = {};
@@ -128,18 +127,18 @@ class EntityDefinition {
             return other;
         };
 
-        options.instanceMethods.entity = () => {
+        options.instanceMethods.entity = function() {
             return Entity;
         };
 
-        options.instanceMethods.toFullJSON = () => {
+        options.instanceMethods.toFullJSON = function() {
             return this.constructor.super_.prototype.toJSON.apply(this, arguments);
         };
 
         var Entity = sequelize.define(this.name, this.properties, options);
 
-        Object.keys(this.hooks).forEach((type) => {
-            self.hooks[type].forEach((fn) => {
+        Object.keys(this.hooks).forEach(function(type) {
+            self.hooks[type].forEach(function(fn) {
                 Entity.hook(type, fn);
             });
         });
