@@ -42,8 +42,9 @@ class CacheInterface {
     }
 
     wrappedCallback(callback) {
-        return (err) => {
-            err && this.log.error(`${this.name} error:`, err);
+        const self = this;
+        return function(err) {
+            err && this.log.error(`${self.name} error:`, err);
             callback && callback.apply(null, arguments);
         };
     }
