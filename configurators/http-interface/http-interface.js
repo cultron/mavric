@@ -45,9 +45,7 @@ class HttpInterface {
             } else {
                 let data;
                 try {
-                    if (typeof(response.body) === 'string') {
-                        data = JSON.parse(response.body);
-                    }
+                    data = JSON.parse(response.body);
                 } catch (e) {
                     data = response.body;
                 }
