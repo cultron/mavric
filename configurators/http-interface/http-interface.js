@@ -6,7 +6,7 @@ class HttpInterface {
     constructor(log, baseUrl, tracker) {
         this.log = log;
         this.baseUrl = baseUrl;
-        this.httpRequester = HttpRequester;
+        this.httpRequester = new HttpRequester();
         this.tracker = tracker;
         this.vendorName = 'HttpInterface';
     }
