@@ -16,9 +16,14 @@ class CacheInterface {
     }
 
     getObject(key, callback) {
-        return this.get(key, (err, item) =>{
+        return this.get(key, (err, item) => {
             if (err) {
                 this.wrappedCallback(callback)(err);
+                return;
+            }
+
+            if (!item) {
+                callback();
                 return;
             }
 
@@ -81,3 +86,5 @@ class CacheInterface {
     }
 
 }
+
+module.exports = CacheInterface;
