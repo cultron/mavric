@@ -3,7 +3,7 @@ const chalk = require('chalk');
 const lifetime = require('sahara').lifetime;
 
 module.exports = (container, callback) => {
-    const configureRedisClient = (container, callback) => {
+    const configureRedisClient = (container) => {
         const config = container.resolveSync('Config');
         const log = container.resolveSync('Log');
 
@@ -15,19 +15,19 @@ module.exports = (container, callback) => {
 
         const port = config.redis.port;
         const host = config.redis.host;
+        const password = config.redis.password || null;
 
-        const createClient = (host, port, done) => {
+        const createClient = (host, port, password) => {
             log.info(`Connecting to redis on ${chalk.cyan(`${host}:${port}`)}`);
-            const redisClient = redis.createClient(port, host);
+            const redisClient = redis.createClient({ host, port, password });
             redisClient.on('error', (err) => {
                 log.error(err);
                 process.exit(1); //this may be too harsh, but if your app depends on redis to run, its appropriate.
             });
-
-            done(null, redisClient);
+            return redisClient;
         };
 
-        createClient(host,port, callback);
+        return createClient(host, port, password);
     };
 
     container.registerFactory(configureRedisClient, 'RedisClient', lifetime.memory());

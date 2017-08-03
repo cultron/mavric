@@ -10,14 +10,15 @@ module.exports = (container, callback) => {
         require('./clients/redis')
     ];
 
-    async.eachSeries(configurators, (configurator, next) => configurator(container, next), (err, container) => {
+    async.eachSeries(configurators, (configurator, next) => {
+        configurator(container, next);
+    }, (err) => {
         const hasRedis = container.isRegistered('RedisClient');
         if (hasRedis) {
             const redisClient = container.resolveSync('RedisClient');
             const redisCache = container.resolveSync('CacheInterfaceFactory').create('RedisCache', redisClient);
-            container.registerInstance('RedisCache', redisCache)
+            container.registerInstance(redisCache, 'RedisCache');
         }
-
-        callback();
+        callback(err);
     });
 };

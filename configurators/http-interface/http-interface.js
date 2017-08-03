@@ -6,7 +6,7 @@ class HttpInterface {
     constructor(log, baseUrl, tracker) {
         this.log = log;
         this.baseUrl = baseUrl;
-        this.httpRequester = HttpRequester;
+        this.httpRequester = new HttpRequester();
         this.tracker = tracker;
         this.vendorName = 'HttpInterface';
     }
@@ -47,6 +47,8 @@ class HttpInterface {
                 try {
                     if (typeof(response.body) === 'string') {
                         data = JSON.parse(response.body);
+                    } else {
+                      data = response.body;
                     }
                 } catch (e) {
                     data = response.body;
@@ -56,11 +58,11 @@ class HttpInterface {
         };
 
         if (json) {
-            this.httpRequester.sendJson(method, url, headers, qs, json, handleReponse);
+            this.httpRequester.sendJson(method, url, headers, qs, json, handleResponse);
         } else if (form) {
-            this.httpRequester.sendForm(method, url, headers, qs, form, handleReponse);
+            this.httpRequester.sendForm(method, url, headers, qs, form, handleResponse);
         } else {
-            this.httpRequester.send(method, url, headers, qs, null, null, handleReponse);
+            this.httpRequester.send(method, url, headers, qs, null, null, handleResponse);
         }
     }
 }
