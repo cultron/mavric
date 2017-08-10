@@ -4,7 +4,7 @@ const lifetime = require('sahara').lifetime;
 
 module.exports = (container, callback) => {
     if (!container.resolveSync('Config').redis) {
-        log.info(`${chalk.red('No redis configuration available!')}`);
+        container.resolveSync('Log').info(`${chalk.red('No redis configuration available!')}`);
         callback();
         return;
     }
