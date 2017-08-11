@@ -2,7 +2,6 @@
 
 const httpStatus = require('http-status');
 const joi = require('joi');
-const x2js = require('../util/xml2json');
 
 class BaseController {
     constructor(/** ControllerContext */context) {
@@ -38,8 +37,8 @@ class BaseController {
         this.send(this.goa.json(error, status));
     }
 
-    xml(json, status) {
-        var xml = '<?xml version="1.0" encoding="UTF-8"?>' + x2js.json2xml_str(json);
+    xml(xml, status) {
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>' + xml;
         this.send(this.goa.action(xml, 'application/xml', status || 200));
     }
 
