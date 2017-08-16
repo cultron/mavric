@@ -1,7 +1,7 @@
 {
   "name": "mavric",
   "description": "Mavric is simple MVC framework on top of Express, Goa and Sahara to speed up the build out of web server controllers, views, and models.",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "engines": {
     "node": ">=6.9.0"
   },
