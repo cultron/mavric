@@ -38,7 +38,6 @@ class BaseController {
     }
 
     xml(xml, status) {
-        let xml = '<?xml version="1.0" encoding="UTF-8"?>' + xml;
         this.send(this.goa.action(xml, 'application/xml', status || 200));
     }
 
