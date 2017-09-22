@@ -1,15 +1,10 @@
-var Mixpanel = require('mixpanel'),
-    chalk = require('chalk');
+const Mixpanel = require('mixpanel');
+const chalk = require('chalk');
 
-module.exports = function(container, callback) {
-    var config = container.resolveSync('Config'),
-        token = config.mixpanelToken;
-
-    var mixpanel = null;
-    if (token) {
-        mixpanel = Mixpanel.init(token);
-    }
-
+module.exports = (container, callback) => {
+    const config = container.resolveSync('Config');
+    const token = config.mixpanelToken;
+    const mixpanel = token ? Mixpanel.init(token) : null;
     container.registerInstance(mixpanel, 'Mixpanel');
     callback();
 };
