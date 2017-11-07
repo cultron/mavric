@@ -1,3 +1,5 @@
+'use strict';
+
 const redis = require('redis');
 const chalk = require('chalk');
 const lifetime = require('sahara').lifetime;
@@ -29,10 +31,10 @@ module.exports = (container, callback) => {
             }
             if (options.attempt > 10) {
                 // End reconnecting with built in error
-                return undefined;
-            }
-            // reconnect after
-            return Math.min(options.attempt * 100, 3000);
+                return;
+
+            // reconnect after 3 seconds
+            return 3000;
         };
 
         log.info(`Connecting to redis on ${chalk.cyan(`${host}:${port}`)}`);
