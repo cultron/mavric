@@ -1,0 +1,101 @@
+defaults: &defaults
+  node_image: &node_image
+    circleci/node:8.2.1
+  docker:
+    - image: *node_image
+
+  npm_cache_key: &npm_cache_key
+    v1-dependencies-{{ checksum "yarn.lock" }}
+  npm_backup_cache_key: &npm_backup_cache_key
+    v1-dependencies-
+
+  restore_node_modules: &restore_node_modules
+    restore_cache:
+      keys:
+        - *npm_cache_key
+        - *npm_backup_cache_key
+
+version: 2
+jobs:
+  prep:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: *npm_cache_key
+
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - *sync_git_submodules
+      - *restore_node_modules
+      - run: npm run test:coverage
+      - persist_to_workspace:
+          root: .
+          paths: coverage
+
+  # send code coverage to CodeClimate
+  # https://docs.codeclimate.com/v1.0/docs/circle-ci-test-coverage-example#section-circleci-20
+  report_coverage:
+    <<: *defaults
+    environment:
+      CC_TEST_REPORTER_ID: 2a91bd3e5bf38d01c21fd58378a7c10713e3cc1d377b270fafa12fe48cb2705e
+    steps:
+      - checkout
+      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - run: chmod +x ./cc-test-reporter
+      - run: ./cc-test-reporter before-build
+      - attach_workspace:
+          at: .
+      - run: ./cc-test-reporter after-build -t lcov --exit-code $?
+
+  lint:
+    <<: *defaults
+    steps:
+      - checkout
+      - *sync_git_submodules
+      - *restore_node_modules
+      - run: npm run lint
+
+  deploy:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: npm publish
+
+workflows:
+  version: 2
+  prep-lint-test:
+    jobs:
+      - prep
+      - lint:
+          requires:
+            - prep
+      - test:
+          requires:
+            - prep
+#      - report_coverage:
+#          requires:
+#            - test
+#      - hold:
+#          type: approval
+#          requires:
+#            - lint
+#            - test
+#          filters:
+#            branches:
+#              only:
+#                - master
+#      - deploy:
+#          requires:
+#            - hold
+#          filters:
+#            branches:
+#              only:
+#                - master
