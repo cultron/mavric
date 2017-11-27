@@ -19,12 +19,15 @@ module.exports = (container, callback) => {
         const password = config.redis.password; //optional
 
         const reconnectStrategy = (options) => {
-            if (options.error && options.error.code === 'ECONNREFUSED') {
-                // End reconnecting on a specific error and flush all commands with
-                // a individual error
-                return new Error('The server refused the connection');
-            }
+            log.info(`${JSON.stringify(options)}`);
+            // if (options.error && options.error.code === 'ECONNREFUSED') {
+            //     container.resolveSync('Log').info(`${chalk.red('The server refused the connection')}`);
+            //     // End reconnecting on a specific error and flush all commands with
+            //     // a individual error
+            //     return new Error('The server refused the connection');
+            // }
             if (options.total_retry_time > 1000 * 60 * 60) {
+                log.info(`${chalk.red('Retries Exhausted')}`);
                 // End reconnecting after a specific timeout and flush all commands
                 // with a individual error
                 return new Error('Retry time exhausted');
@@ -32,7 +35,8 @@ module.exports = (container, callback) => {
             if (options.attempt > 10) {
                 // End reconnecting with built in error
                 return;
-
+            }
+            log.info(`${chalk.red('Trying to reconnect Redis')}`);
             // reconnect after 3 seconds
             return 3000;
         };
@@ -45,8 +49,8 @@ module.exports = (container, callback) => {
             retry_strategy: reconnectStrategy
         });
         redisClient.on('error', (err) => {
-            log.error('Redis Error:', err);
-            process.exit(1); //this may be too harsh, but if your app depends on redis to run, its appropriate.
+            log.info(`${chalk.red('Redis Error!')}`);
+            //process.exit(1); //this may be too harsh, but if your app depends on redis to run, its appropriate.
         });
 
         redisClient.__set = redisClient.set;
