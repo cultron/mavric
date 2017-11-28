@@ -37,8 +37,8 @@ module.exports = (container, callback) => {
             charset: 'utf8'
         },
         pool: {
-            maxConnections: dbConfig.pool.maxConnections || 20,
-            maxIdleTime: dbConfig.pool.maxIdleTime || 30
+            max: dbConfig.pool.maxConnections || 20,
+            idle: dbConfig.pool.maxIdleTime || 3000
         }
     });
 
