@@ -11,7 +11,6 @@ module.exports = (container, callback) => {
         return;
     }
 
-    const createClient = (container) => {
         const config = container.resolveSync('Config');
         const log = container.resolveSync('Log');
         const port = config.redis.port;
@@ -48,18 +47,28 @@ module.exports = (container, callback) => {
             password,
             retry_strategy: reconnectStrategy
         });
+        redisClient.on('ready', () => {
+            log.debug('redis ready');
+        });
+        redisClient.on('connect', () => {
+            log.debug('redis connected');
+        });
+        redisClient.on('reconnecting', () => {
+            log.debug('redis reconnecting');
+        });
+        redisClient.on('warning', (msg) => {
+            log.warn('redis warning', msg);
+        });
         redisClient.on('error', (err) => {
             log.info(`${chalk.red('Redis Error!')}`);
-            //process.exit(1); //this may be too harsh, but if your app depends on redis to run, its appropriate.
         });
 
         redisClient.__set = redisClient.set;
         redisClient.set = function(key, ttl, value, callback) {
             this.__set(key, value, 'EX', ttl, callback);
         };
-        return redisClient;
-    };
 
-    container.registerFactory(createClient, 'RedisClient', lifetime.memory());
+
+    container.registerInstance(redisClient, 'RedisClient');
     callback();
 };
