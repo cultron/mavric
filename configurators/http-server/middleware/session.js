@@ -25,11 +25,11 @@ module.exports = (container, callback) => {
     const RedisStore = connectRedis(expressSession);
 
     app.use(expressSession({
-        saveUninitialized: true,
-        resave: false,
+        saveUninitialized: sessionConfig.saveUninitialized,
+        resave: sessionConfig.resave,
         name: sessionConfig.key,
         secret: sessionConfig.secret,
-        proxy: true,
+        proxy: sessionConfig.proxy,
         store: new RedisStore({
             client: redisClient,
             ttl: sessionConfig.ttl
