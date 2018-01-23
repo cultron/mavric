@@ -25,6 +25,7 @@ module.exports = (container, callback) => {
 
         redisClient.on('error', (err) => {
             log.info(`${chalk.red('Redis Error!')}`);
+            process.exit(1);
         });
 
         redisClient.on('ready', () => {
