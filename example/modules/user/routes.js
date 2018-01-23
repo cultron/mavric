@@ -1,4 +1,4 @@
-module.exports = function(app, schema, callback) {
+module.exports = (app, schema, callback) => {
     app.get('/api/user/:id', {
         controller: 'Service',
         service: 'User',

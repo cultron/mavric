@@ -1,19 +1,18 @@
 //All core configurators
 const Database = require('./configurators/database');
-const HttpController = require('./configurators/http-controller');
-const Helper = require('./configurators/helpers');
+const Core = require('./configurators/core');
 const Cache = require('./configurators/cache');
+const HttpServer = require('./configurators/http-server');
 
 module.exports = {
     Configurator: {
-        Helper: Helper.Configurator,
+        Core: Core.Configurator,
         Tracker: require('./configurators/tracker'),
-        HttpController: HttpController.Configurator,
         Cache: Cache.Configurator,
-        Database: Database.Configurator
+        Database: Database.Configurator,
+        HttpServer: HttpServer.Configurator
     },
-    HttpServer: require('./configurators/http-server'),
     Database: Database,
-    HttpController: HttpController,
-    Helper: Helper
+    HttpServer: HttpServer,
+    Core: Core
 };

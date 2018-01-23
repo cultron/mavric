@@ -11,12 +11,12 @@ const configurator = (container, callback) => {
     ];
 
     async.eachSeries(configurators, (configurator, next) => configurator(container, next), (err) => {
-        const hasRedis = container.isRegistered('RedisClient');
-        if (hasRedis) {
-            const redisClient = container.resolveSync('RedisClient');
-            const redisCache = container.resolveSync('CacheInterfaceFactory').create('RedisCache', redisClient);
-            container.registerInstance(redisCache, 'RedisCache')
-        }
+        // const hasRedis = container.isRegistered('RedisClient');
+        // if (hasRedis) {
+        //     const redisClient = container.resolveSync('RedisClient');
+        //     const redisCache = container.resolveSync('CacheInterfaceFactory').create('RedisCache', redisClient);
+        //     container.registerInstance(redisCache, 'RedisCache')
+        // }
 
         callback();
     });

@@ -4,11 +4,14 @@ const httpStatus = require('http-status');
 const joi = require('joi');
 
 class BaseController {
-    constructor(/** ControllerContext */context) {
-        this.request = context.req;
-        this.response = context.res;
-        this.log = context.log;
-        this.errorMapping = context.errorMapping;
+    constructor(
+        /** ControllerContext */context,
+        /** goa */goa
+    ) {
+        this.goa = goa;
+        this.request = context && context.req;
+        this.response = context && context.res;
+        this.log = context && context.log;
         this.send = function() {
             throw new Error('Controller was misconfigured somehow: send should have been overridden');
         };
@@ -42,6 +45,8 @@ class BaseController {
     }
 
     json(json, status) {
+        //console.log('got to the json function', this.goa.json, this.send);
+        this.response.set('Content-Type', 'application/json');
         this.send(this.goa.json(json, status || 200));
     }
 
@@ -86,48 +91,36 @@ class BaseController {
     handle(params, send) {
         this.send = send;
 
-        this.defaultViewName = params.view;
-
         const invokeMethod = (handler, values) => {
-            var method = handler[params.method];
+            const method = handler[params.method];
             if (!method || typeof(method) !== 'function') {
                 this.handleUnknownAction(params, send);
                 return;
             }
 
-            function parseArgs(fn) {
-                return (/\(([\s\S]*?)\)/.exec(fn.toString()) || [ '', '' ])[1]
-                    .split(',')
-                    .map(function(name) {
-                        return name.replace(/\/\*\*.*?\*\//, '').trim();
-                    });
+            //parse function signature
+            const signatureMatch = /.+?\((.*?)\)/.exec(method.toString());
+            if (!signatureMatch) {
+                this.log.error(`Failed to parse signature for method ${methodName}`);
+                this.sendError('Internal error, sorry.');
+                return;
             }
 
-            var defaultArgs = {
+            const argNames = signatureMatch[1].split(',').map((value) => value.trim());
+
+            const defaultArgs = {
                 data: values,
-                options: values,
-                values: values,
                 callback: (err, result) => {
-                    //ron is just the worst
-                    const responseData = err ? this.createErrorResponse(err) : result;
-                    const status = this.getStatus(err ? responseData.status || 'internal server error' : 'ok');
-                    if (err && responseData.status) {
-                        delete responseData.status;
+                    if (err) {
+                        this.json(err, 500);
+                        return;
                     }
 
-                    switch (params.format) {
-                        case 'xml':
-                            this.xml(responseData, status);
-                            break;
-                        case 'json':
-                        default:
-                            this.json(this.serializeObject(responseData), status);
-                            break;
-                    }
+                    this.json(result, 200);
                 }
             };
 
-            const args = parseArgs(method).map(function(argName) {
+            const args = argNames.map(function(argName) {
                 if (argName in values) {
                     return values[argName];
                 }
@@ -139,27 +132,17 @@ class BaseController {
                 return null;
             });
 
-            method.apply(handler, args);
+            method.apply(this, args);
         };
 
-        if (params.corsEnabled) {
-            this.response.header('Access-Control-Allow-Origin', '*');
-            this.response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        }
-
-        const inputs = params.inputs || {};
-        const values = Object.keys(inputs).reduce((values, key) => {
-            values[key] = params[key];
-            return values;
-        }, {});
-
-        this.validate(inputs, values, (err, values) => {
+        this.validate(params, (err, values) => {
             if (err) {
                 this.error(err, 400);
                 return;
             }
 
             this.getHandler(params, (err, handler) => {
+                //console.log('got handler', err, handler);
                 if (err) {
                     if (err.handlerNotFound) {
                         this.handleUnknownAction(params, send);
@@ -240,7 +223,13 @@ class BaseController {
         return this.translateError(err);
     }
 
-    validate(inputs, values, callback) {
+    validate(params, callback) {
+        const inputs = params.inputs || {};
+        const values = Object.keys(inputs).reduce((values, key) => {
+            values[key] = params[key];
+            return values;
+        }, {});
+
         joi.validate(values, joi.object().keys(inputs), callback);
     }
 }
