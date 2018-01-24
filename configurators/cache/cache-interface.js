@@ -44,7 +44,7 @@ class CacheInterface {
     wrappedCallback(callback) {
         const self = this;
         return function(err) {
-            err && this.log.error(`${self.name} error:`, err);
+            err && self.log.error(`${self.name} error:`, err);
             callback && callback.apply(null, arguments);
         };
     }
@@ -78,9 +78,14 @@ class CacheInterface {
             callback = ttl;
             ttl = null;
         }
-
+        const args = [
+            key,
+            JSON.stringify(value),
+            ttl,
+            this.wrappedCallback(callback)
+        ];
         try {
-            this.set(key, JSON.stringify(value), ttl, this.wrappedCallback(callback));
+            this.set.apply(this, args);
         } catch (e) {
             this.wrappedCallback(callback)(e);
         }

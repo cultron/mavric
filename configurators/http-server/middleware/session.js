@@ -1,11 +1,13 @@
 'use strict';
 
 module.exports = (container, callback) => {
+    const log = container.resolveSync('Log');
     const config = container.resolveSync('Config');
     const sessionConfig = config.session;
 
     if (!sessionConfig || !sessionConfig.key || !sessionConfig.secret || !sessionConfig.ttl) {
-        callback(new Error('missing/invalid session config block'));
+        log.warn('missing/invalid session config block');
+        callback();
         return;
     }
 
@@ -18,7 +20,6 @@ module.exports = (container, callback) => {
 
     const connectRedis = require('connect-redis');
     const expressSession = require('express-session');
-    //const csurf = require('csurf');
     const redisClient = container.resolveSync('RedisClient');
 
     const app = container.resolveSync('App');
@@ -30,6 +31,7 @@ module.exports = (container, callback) => {
         name: sessionConfig.key,
         secret: sessionConfig.secret,
         proxy: sessionConfig.proxy,
+        cookie: sessionConfig.cookie,
         store: new RedisStore({
             client: redisClient,
             ttl: sessionConfig.ttl
