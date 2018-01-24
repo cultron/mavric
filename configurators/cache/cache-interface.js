@@ -16,7 +16,7 @@ class CacheInterface {
     }
 
     getObject(key, callback) {
-        return this.get(key, (err, item) => {
+        this.get(key, (err, item) => {
             if (err) {
                 this.wrappedCallback(callback)(err);
                 return;
@@ -70,7 +70,7 @@ class CacheInterface {
         }
 
         this.log.debug('setting cache value at ' + chalk.cyan(key) + ' with TTL ' + chalk.yellow(ttl.toString()));
-        this.client.set(key, ttl, value, this.wrappedCallback(callback));
+        this.client.set(key, value, 'EX', ttl, this.wrappedCallback(callback));
     }
 
     setObject(key, value, ttl, callback) {
@@ -78,14 +78,9 @@ class CacheInterface {
             callback = ttl;
             ttl = null;
         }
-        const args = [
-            key,
-            JSON.stringify(value),
-            ttl,
-            this.wrappedCallback(callback)
-        ];
+
         try {
-            this.set.apply(this, args);
+            this.set(key, JSON.stringify(value), ttl, this.wrappedCallback(callback));
         } catch (e) {
             this.wrappedCallback(callback)(e);
         }
