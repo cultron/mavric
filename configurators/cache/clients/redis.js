@@ -2,45 +2,50 @@
 
 const redis = require('redis');
 const chalk = require('chalk');
-const lifetime = require('sahara').lifetime;
 
 module.exports = (container, callback) => {
-    if (!container.resolveSync('Config').redis) {
-        container.resolveSync('Log').info(`${chalk.red('No redis configuration available!')}`);
+    const log = container.resolveSync('Log');
+
+    const config = container.resolveSync('Config');
+    const redisConfig = config.redis;
+
+    if (!redisConfig || !redisConfig.host || !redisConfig.port) {
+        log.warn(chalk.yellow('missing/invalid redis config block'));
         callback();
         return;
     }
 
-        const config = container.resolveSync('Config');
-        const log = container.resolveSync('Log');
-        const port = config.redis.port;
-        const host = config.redis.host;
+    const port = redisConfig.port;
+    const host = redisConfig.host;
 
-        log.info(`Connecting to redis on ${chalk.cyan(`${host}:${port}`)}`);
+    log.info('Connecting to redis on ' + chalk.magenta(host + ':' + port));
 
-        const redisClient = redis.createClient({
-            host,
-            port
-        });
+    const redisClient = redis.createClient({
+        host: host,
+        port: port
+    });
 
-        redisClient.on('error', (err) => {
-            log.info(`${chalk.red('Redis Error!')}`);
-            process.exit(1);
-        });
+    redisClient.on('error', (err) => {
+        log.error(err);
+        process.exit(1);
+    });
 
-        redisClient.on('ready', () => {
-            log.debug('redis ready');
-        });
-        redisClient.on('connect', () => {
-            log.debug('redis connected');
-        });
-        redisClient.on('reconnecting', () => {
-            log.debug('redis reconnecting');
-        });
-        redisClient.on('warning', (msg) => {
-            log.warn('redis warning', msg);
-        });
+    redisClient.on('ready', () => {
+        log.debug('redis ready');
+    });
+    redisClient.on('connect', () => {
+        log.debug('redis connected');
+    });
+    redisClient.on('reconnecting', () => {
+        log.debug('redis reconnecting');
+    });
+    redisClient.on('warning', (msg) => {
+        log.warn('redis warning', msg);
+    });
 
-    container.registerInstance(redisClient, 'RedisClient');
+    container
+        .registerInstance(redisConfig, 'RedisConfig')
+        .registerInstance(redisClient, 'RedisClient');
+
     callback();
 };

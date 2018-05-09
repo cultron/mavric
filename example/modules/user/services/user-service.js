@@ -1,21 +1,18 @@
-var async = require('async');
-
-function UserService() {
-
-}
-
-UserService.prototype = {
-    list: function(callback) {
+class UserService{
+    index(callback) {
+        callback(null, 'here')
+    }
+    list(callback) {
         callback(null, [])
-    },
+    }
 
-    get: function(id, callback) {
+    get(id, callback) {
         callback(null, { id: id });
-    },
+    }
 
-    update: function(id, data, callback) {
+    update(id, data, callback) {
         callback(null, {});
     }
-};
+}
 
 module.exports = UserService;

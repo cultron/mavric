@@ -1,47 +1,58 @@
 'use strict';
-const Mavric = require('../');
+
+const chalk = require('chalk');
+const mavric = require('../');
 const sahara = require('sahara');
+const container = new sahara.Container();
+const startTime = Date.now();
 
 const config = {
-    api: {
+    app: {
         port: 3000,
-        name: 'Mavric Example Web App'
+        name: 'Mavric Example Web App',
+        defaultAction: 'handle'
     },
-    postgres: {
-        host: 'localhost',
-        username: 'root',
-        password: 'password',
-        database: 'database',
-        schema: 'database',
-        port: 54321,
-        reconnect: {
-            maxRetries: 10,
-            interval: 1000
-        },
-        pool: {
-            maxConnections: 20,
-            maxIdleTime: 30
-        }
-    }
+    session: {
+        key: 'sid',
+        secret: 'wine is fine, whiskey is swell, but beer is better',
+        ttl: 60 * 60 * 24
+    },
+    redis: {
+        port: 6379,
+        host: 'localhost'
+    },
+    log: {
+        level: 'debug',
+        timestamps: 'quiet',
+        colorize: true
+    },
 };
-Mavric.HttpServer(() => {
-    const container = new sahara.Container()
-        .registerInstance(__dirname, 'AppRoot')
-        .registerInstance(config, 'Config')
-        .registerInstance(config.api.port, 'ExpressPort')
-        .registerInstance(config.api.name, 'AppName');
 
-    const configurators = [
-        Mavric.Helper,
-        Mavric.Tracker,
-        Mavric.Database,
-        require('./configurators/express'),
-        require('./configurators/modules'),
-        Mavric.HttpController
-    ];
+container
+    .registerInstance(__dirname, 'AppDir')
+    .registerInstance(config, 'Config')
+    .registerInstance(config.app.name, 'AppName');
 
-    return {
-        container: container,
-        configurators: configurators
-    };
+const configurators = [
+    mavric.Configurator.Core,
+    mavric.Configurator.Cache,
+    mavric.Configurator.HttpServer,
+    // add all your application modules and other custom middleware here
+    require('./configurators/modules'),
+
+    // start http listener
+    mavric.HttpServer.Listener
+];
+
+mavric.Core.configure(configurators, container, (err) => {
+    if (err) {
+        console.error(err);
+        err.stack && console.error(err.stack);
+        process.exit(1);
+    }
+
+    const log = container.resolveSync('Log');
+    log.debug(`App configured in ${chalk.yellow(Date.now() - startTime)}ms`);
 });
+
+

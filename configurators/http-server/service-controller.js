@@ -3,8 +3,11 @@
 const BaseController = require('./base-controller');
 
 class ServiceController extends BaseController {
-    constructor(/** ControllerContext */context) {
-        super(context);
+    constructor(
+        /** ControllerContext */context,
+        /** goa */goa) {
+        super(context, goa);
+        this.container = context && context.req && context.req.container;
     }
 
     getHandler(params, callback) {
