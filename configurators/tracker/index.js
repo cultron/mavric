@@ -1,15 +1,21 @@
 //TODO: Make this more extensible to enable different tracking systems
-var async = require('async');
+const async = require('async');
+const Tracker = require('./tracker');
 
-module.exports = function(container, callback) {
-    var configurators = [
+const configurator = (container, callback) => {
+    const configure = container.resolveSync('configure');
+    const configurators = [
         require('./mixpanel'),
-        require('./tracker')
     ];
 
-    async.eachSeries(configurators, function(configurator, next) {
-        configurator(container, next);
+    configure(configurators, container, () => {
+        container.registerType(Tracker);
+        callback();
     });
+};
 
-    callback();
+
+module.exports = {
+    Configurator: configurator,
+    Tracker: Tracker
 };
