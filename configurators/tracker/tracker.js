@@ -8,6 +8,7 @@ class Tracker {
         }
 
         logError(callback) {
+            const log = this.log;
             return function (err) {
                 if (err) {
                     log.error('Tracker error', err);
@@ -55,6 +56,24 @@ class Tracker {
             }
 
             this.mixpanel.track(event, properties, this.logError(callback));
+        }
+
+        increment(id, eventName, amount, callback) {
+            if (typeof(amount) === 'function') {
+                callback = amount;
+                amount = 1;
+            }
+
+            if (!id) {
+                throw new Error('Missing Distinct Id for user');
+            }
+
+            if (!this.mixpanel) {
+                callback && callback();
+                return;
+            }
+
+            this.mixpanel.people.increment(id, eventName, amount, this.logError(callback))
         }
     }
 
