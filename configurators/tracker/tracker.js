@@ -75,6 +75,19 @@ class Tracker {
 
             this.mixpanel.people.increment(id, eventName, amount, this.logError(callback))
         }
+
+        trackCharge(id, amount, callback) {
+            if (!id) {
+                throw new Error('Missing Distinct Id for user');
+            }
+
+            if (!this.mixpanel) {
+                callback && callback();
+                return;
+            }
+
+            this.mixpanel.people.track_charge(id, amount, this.logError(callback));
+        }
     }
 
 module.exports = Tracker;
