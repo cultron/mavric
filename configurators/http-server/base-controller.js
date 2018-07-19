@@ -90,7 +90,6 @@ class BaseController {
 
     handle(params, send) {
         this.send = send;
-
         const invokeMethod = (handler, values) => {
             const method = handler[params.method];
             if (!method || typeof(method) !== 'function') {
@@ -132,7 +131,7 @@ class BaseController {
                 return null;
             });
 
-            method.apply(this, args);
+            method.apply(handler, args);
         };
 
         this.validate(params, (err, values) => {

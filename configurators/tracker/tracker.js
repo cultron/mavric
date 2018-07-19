@@ -11,7 +11,7 @@ class Tracker {
             const log = this.log;
             return function (err) {
                 if (err) {
-                    log.error('Tracker error', err);
+                    log.error(err);
                 }
 
                 callback && callback(err);
@@ -33,13 +33,15 @@ class Tracker {
                 return;
             }
 
-            this.mixpanel.people.set(id, properties, (err) => {
-                if (this.mixpanel.identify) {
-                    this.mixpanel.identify(id);
-                }
+            const args = [properties, this.logError(callback)];
 
-                this.logError(callback)(err);
-            })
+            if (this.mixpanel.identify) {
+                this.log.debug('using browser client')
+                this.mixpanel.identify(id);
+                this.mixpanel.people.set(properties, this.logError(callback));
+            } else {
+                this.mixpanel.people.set(id, properties, this.logError(callback));
+            }
         }
 
         track(event, properties, callback) {
