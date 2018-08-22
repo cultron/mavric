@@ -44,9 +44,9 @@ module.exports = (container, callback) => {
 
     if (dbConfig.dialect === 'postgres') {
         //prevent DATE fields being parsed into Date objects with incorrect timezone information
-        pg.types.setTypeParser(1082, function (val) {
-            return val;
-        });
+        pg.types.setTypeParser(1082, (val) => val);
+        pg.types.setTypeParser(1700, (val) => parseFloat(val));
+        pg.defaults.parseInt8 = true;
     }
 
     container.registerInstance(sequelize, 'Sequelize', lifetime.memory());
