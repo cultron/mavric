@@ -12,7 +12,8 @@ class HttpInterface {
     }
     request(options, callback) {
         let method = options.method;
-        let url = this.baseUrl + '/' + options.uri,
+        let baseUrl = options.baseUrl ? options.baseUrl : this.baseUrl;
+        let url = baseUrl + '/' + options.uri,
             headers = options.headers,
             qs = options.qs || {},
             json = options.json,
@@ -40,14 +41,18 @@ class HttpInterface {
 
                 callback({
                     status: response.statusCode,
+                    headers: response.headers,
                     body: response.body
                 });
             } else {
-                let data;
+                const data = {
+                    status: response.statusCode,
+                    headers: response.headers,
+                }
                 try {
-                    data = JSON.parse(response.body);
+                    data.body = JSON.parse(response.body);
                 } catch (e) {
-                    data = response.body;
+                    data.body = response.body;
                 }
                 callback(null, data);
             }
