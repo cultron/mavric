@@ -141,17 +141,14 @@ class BaseController {
             }
 
             this.getHandler(params, (err, handler) => {
-                //console.log('got handler', err, handler);
                 if (err) {
                     if (err.handlerNotFound) {
                         this.handleUnknownAction(params, send);
                         return;
                     }
-
                     this.error(err, 500);
                     return;
                 }
-
                 invokeMethod(handler, values);
             });
         });

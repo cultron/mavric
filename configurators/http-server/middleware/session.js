@@ -25,18 +25,20 @@ module.exports = (container, callback) => {
     const app = container.resolveSync('App');
     const RedisStore = connectRedis(expressSession);
 
-    app.use(expressSession({
-        saveUninitialized: sessionConfig.saveUninitialized,
-        resave: sessionConfig.resave,
-        name: sessionConfig.key,
-        secret: sessionConfig.secret,
-        proxy: sessionConfig.proxy,
-        cookie: sessionConfig.cookie,
-        store: new RedisStore({
-            client: redisClient,
-            ttl: sessionConfig.ttl
-        })
-    }));
+    if (!sessionConfig.override) {
+        app.use(expressSession({
+            saveUninitialized: sessionConfig.saveUninitialized,
+            resave: sessionConfig.resave,
+            name: sessionConfig.key,
+            secret: sessionConfig.secret,
+            proxy: sessionConfig.proxy,
+            cookie: sessionConfig.cookie,
+            store: new RedisStore({
+                client: redisClient,
+                ttl: sessionConfig.ttl
+            })
+        }));
+    }
 
     callback();
 };
