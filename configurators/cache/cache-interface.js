@@ -86,6 +86,17 @@ class CacheInterface {
         }
     }
 
+    setHash(name, field, value, callback) {
+        this.client.hset(name, field, value, this.wrappedCallback(callback));
+    }
+
+    getHash(name, field, callback) {
+        this.client.hget(name, field, this.wrappedCallback(callback));
+    }
+
+    deleteHash(name, field, callback) {
+        this.client.hdel(name, field, this.wrappedCallback(callback));
+    }
 }
 
 module.exports = CacheInterface;
