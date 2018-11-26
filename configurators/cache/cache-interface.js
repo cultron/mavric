@@ -86,16 +86,16 @@ class CacheInterface {
         }
     }
 
-    setHash(name, field, value, callback) {
-        this.client.hset(name, field, value, this.wrappedCallback(callback));
+    setHash(name, key, value, callback) {
+        this.client.hset(name, key, value, this.wrappedCallback(callback));
     }
 
-    getHash(name, field, callback) {
-        this.client.hget(name, field, this.wrappedCallback(callback));
+    getHash(name, key, callback) {
+        this.client.hget(name, key, this.wrappedCallback(callback));
     }
 
-    deleteHash(name, field, callback) {
-        this.client.hdel(name, field, this.wrappedCallback(callback));
+    deleteHash(name, key, callback) {
+        this.client.hdel(name, key, this.wrappedCallback(callback));
     }
 }
 
